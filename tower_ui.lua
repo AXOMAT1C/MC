@@ -1,24 +1,17 @@
+
 -- tower_ui.lua
 local monitor = peripheral.wrap("top")
-local w,h = monitor.getSize()
+local tower_state = require("tower_state")
+local textsize = require("textsize")
+
+local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
+local colorsFloor = {DACH=colors.lightBlue,WOOD=colors.brown,FARMS=colors.green,ITEM=colors.yellow,DEFENSE=colors.red,STORAGE=colors.orange,["EN/ME"]=colors.purple}
+
+local maxBarLength = textsize.getBarLength("desktop")
+
 monitor.clear()
 monitor.setBackgroundColor(colors.black)
 monitor.setTextColor(colors.white)
-
-local tower_state = require("tower_state")
-local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
-
-local maxBarLength = math.min(30, w-2)
-
-local colorsFloor = {
-    DACH = colors.lightBlue,
-    WOOD = colors.brown,
-    FARMS = colors.green,
-    ITEM = colors.yellow,
-    DEFENSE = colors.red,
-    STORAGE = colors.orange,
-    ["EN/ME"] = colors.purple
-}
 
 local function drawProgress()
     monitor.clear()
@@ -30,7 +23,7 @@ local function drawProgress()
         monitor.setBackgroundColor(colorsFloor[floor] or colors.white)
         monitor.write(string.rep(" ", filled))
         monitor.setBackgroundColor(colors.black)
-        monitor.write(string.rep("-", maxBarLength - filled) .. " " .. floor .. string.format(" %.0f%%", progress*100))
+        monitor.write(string.rep("-", maxBarLength-filled) .. " " .. floor .. string.format(" %.0f%%", progress*100))
     end
 end
 
