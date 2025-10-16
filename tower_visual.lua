@@ -3,7 +3,7 @@ local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
 local tower_state = require("tower_state")
-local textsize = require("textsize")
+local textsize = require("text_size")
 
 -- Floors
 local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
