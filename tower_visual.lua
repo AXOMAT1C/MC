@@ -1,4 +1,4 @@
--- tower_visual.lua
+-- tower_visual.lua (dynamische Version)
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
@@ -13,9 +13,11 @@ local colorsFloor = {
 }
 
 local w,h = monitor.getSize()
-local maxBarLength = textsize.getBarLength("desktop")
-local buttonWidth = math.floor(w / #floors)
+
+-- Dynamische Balkenlängen
+local maxBarLength = math.min(30, w-4)  
 local buttonHeight = 3
+local buttonWidth = math.floor(w / #floors)
 
 -- ASCII Roadmap
 local roadmap = {
@@ -75,22 +77,23 @@ local function drawFrame()
     end
 end
 
--- ASCII Roadmap anzeigen
+-- ASCII Roadmap anzeigen (angepasst an Bildschirmhöhe)
 local function drawRoadmap()
     for i,line in ipairs(roadmap) do
-        if i <= h then
+        if i <= h-buttonHeight-1 then
             monitor.setCursorPos(2, i)
             monitor.setBackgroundColor(colors.black)
             monitor.setTextColor(colors.white)
-            monitor.write(line)
+            monitor.write(string.sub(line,1,w-2)) -- dynamische Breite
         end
     end
 end
 
 -- Fortschrittsbalken
 local function drawProgress()
+    local startY = math.min(#roadmap+1, h-buttonHeight-#floors-1)
     for i,floor in ipairs(floors) do
-        local y = #roadmap + i
+        local y = startY + i
         if y>h-buttonHeight then break end
         local progress = tower_state.getProgress(floor)
         local filled = math.floor(progress*maxBarLength)
@@ -104,16 +107,16 @@ end
 
 -- Buttons + / - für Fortschritt
 local function drawButtons()
+    local by = h-buttonHeight+1
     for i,floor in ipairs(floors) do
         local bx = (i-1)*buttonWidth+1
-        local by = h-buttonHeight+1
         monitor.setBackgroundColor(colors.gray)
         for j=0,buttonHeight-1 do
             monitor.setCursorPos(bx, by+j)
             monitor.write(string.rep(" ", buttonWidth))
         end
         local textX = bx + 1
-        local textY = by
+        local textY = by + 1
         monitor.setCursorPos(textX, textY)
         monitor.setTextColor(colors.white)
         monitor.write(floor .. " [+/-]")
@@ -124,16 +127,14 @@ end
 local function handleTouch()
     while true do
         local event, side, x, y = os.pullEvent("monitor_touch")
+        local by = h-buttonHeight+1
         for i,floor in ipairs(floors) do
             local bx = (i-1)*buttonWidth+1
-            local by = h-buttonHeight+1
             if x>=bx and x<bx+buttonWidth and y>=by and y<by+buttonHeight then
                 local current = tower_state.getProgress(floor)
                 if x < bx + buttonWidth/2 then
-                    -- Minus
                     tower_state.setProgress(floor, math.max(current-0.1,0))
                 else
-                    -- Plus
                     tower_state.setProgress(floor, math.min(current+0.1,1))
                 end
             end
