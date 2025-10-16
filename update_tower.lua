@@ -5,6 +5,7 @@ local files = {
     "tower_logic.lua",
     "tower_ui.lua",
     "tower_addon_tablet.lua"
+    "text_size.lua"
 }
 
 -- GitHub-Raw-Basis-URL
