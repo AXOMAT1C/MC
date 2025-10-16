@@ -4,8 +4,8 @@ local files = {
     "tower_state.lua",
     "tower_logic.lua",
     "tower_ui.lua",
-    "tower_addon_tablet.lua"
-    "text_size.lua"
+    "tower_addon_tablet.lua",
+    "text_size.lua",
 }
 
 -- GitHub-Raw-Basis-URL
