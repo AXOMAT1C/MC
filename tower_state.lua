@@ -1,10 +1,9 @@
 -- tower_state.lua
--- Speichert Fortschritt pro Floor
 local state = {}
 local progress = {}
 
 local function setProgress(floor, value)
-    progress[floor] = math.min(math.max(value, 0), 1) -- zwischen 0 und 1
+    progress[floor] = math.min(math.max(value,0),1)
 end
 
 local function getProgress(floor)
@@ -13,9 +12,7 @@ end
 
 local function getAll()
     local copy = {}
-    for k,v in pairs(progress) do
-        copy[k] = v
-    end
+    for k,v in pairs(progress) do copy[k]=v end
     return copy
 end
 
