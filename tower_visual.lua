@@ -4,6 +4,8 @@ local tower_state = require("tower_state")
 local textsize = require("textsize")
 
 local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
+local monitor = peripheral.wrap("top") or peripheral.find("monitor")
+if not monitor then error("Kein Monitor gefunden!") end
 local w,h = monitor.getSize()
 local colorsFloor = {DACH=colors.lightBlue,WOOD=colors.brown,FARMS=colors.green,ITEM=colors.yellow,DEFENSE=colors.red,STORAGE=colors.orange,["EN/ME"]=colors.purple}
 
