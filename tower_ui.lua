@@ -105,9 +105,7 @@ function M.draw(monitorTerm, state)
     local lang = state.lang or "de"
     local T = i18n[lang] or i18n.de
     local w,h = monitorTerm.getSize()           -- zuerst Monitorgröße holen
-    local maxBarLength = math.min(30, w-2)      -- Desktop-Balken
-    local tabletBarLength = math.min(20, w-2)   -- Tablet-Balken
-
+    
     monitorTerm.setBackgroundColor(colors.black)
     monitorTerm.clear()
     monitorTerm.setCursorPos(1,1)
@@ -194,5 +192,6 @@ function M.mapClickToTask(monitorTerm, state, x, y)
 end
 
 return M
+
 
 
