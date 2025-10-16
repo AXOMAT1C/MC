@@ -1,9 +1,18 @@
--- tower_visual.lua (dynamische Version)
+-- tower_visual.lua (dynamisch + safe)
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
+-- Monitorgröße dynamisch abrufen
+local w,h = 51,19 -- Default fallback
+if monitor.getSize then
+    local mw,mh = monitor.getSize()
+    if mw and mh then
+        w,h = mw,mh
+    end
+end
+
 local tower_state = require("tower_state")
-local textsize = require("text_size")
+local textsize = require("textsize")
 
 -- Floors
 local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
@@ -12,10 +21,8 @@ local colorsFloor = {
     ITEM=colors.yellow,DEFENSE=colors.red,STORAGE=colors.orange,["EN/ME"]=colors.purple
 }
 
-local w,h = monitor.getSize()
-
--- Dynamische Balkenlängen
-local maxBarLength = math.min(30, w-4)  
+-- Balkenlängen dynamisch
+local maxBarLength = math.min(30, w-4)
 local buttonHeight = 3
 local buttonWidth = math.floor(w / #floors)
 
@@ -77,14 +84,14 @@ local function drawFrame()
     end
 end
 
--- ASCII Roadmap anzeigen (angepasst an Bildschirmhöhe)
+-- ASCII Roadmap anzeigen
 local function drawRoadmap()
     for i,line in ipairs(roadmap) do
         if i <= h-buttonHeight-1 then
             monitor.setCursorPos(2, i)
             monitor.setBackgroundColor(colors.black)
             monitor.setTextColor(colors.white)
-            monitor.write(string.sub(line,1,w-2)) -- dynamische Breite
+            monitor.write(string.sub(line,1,w-2))
         end
     end
 end
@@ -105,7 +112,7 @@ local function drawProgress()
     end
 end
 
--- Buttons + / - für Fortschritt
+-- Buttons + / -
 local function drawButtons()
     local by = h-buttonHeight+1
     for i,floor in ipairs(floors) do
@@ -115,9 +122,7 @@ local function drawButtons()
             monitor.setCursorPos(bx, by+j)
             monitor.write(string.rep(" ", buttonWidth))
         end
-        local textX = bx + 1
-        local textY = by + 1
-        monitor.setCursorPos(textX, textY)
+        monitor.setCursorPos(bx+1, by+1)
         monitor.setTextColor(colors.white)
         monitor.write(floor .. " [+/-]")
     end
@@ -143,7 +148,7 @@ local function handleTouch()
     end
 end
 
--- Main Loop
+-- Main
 drawFrame()
 drawRoadmap()
 drawButtons()
