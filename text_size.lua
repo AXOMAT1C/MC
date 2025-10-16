@@ -1,28 +1,22 @@
--- text_size.lua
-local monitor = peripheral.wrap("top")
-local w,h = monitor.getSize()
-monitor.clear()
-monitor.setBackgroundColor(colors.black)
-monitor.setTextColor(colors.white)
+-- textsize.lua
+-- Verwaltet Balkenlängen für Desktop und Tablet
+local monitor = peripheral.find("monitor") -- falls kein spezielles Side angegeben
+local w,h = 51,19
 
--- Einfacher Banner-Text
-local function drawLargeText(text, x, y)
-    local letters = {
-        A = {"  #  "," # # ","#####","#   #","#   #"},
-        B = {"#### ","#   #","#   #","#### ","#   #","#   #","#### "},
-        C = {" ####","#    ","#    ","#    "," ####"},
-        -- weitere Buchstaben hinzufügen nach Bedarf
-    }
-
-    for row=1,5 do
-        monitor.setCursorPos(x, y+row-1)
-        for i=1,#text do
-            local char = text:sub(i,i):upper()
-            local pattern = letters[char] or {" "} -- Leerzeichen für unbekannte Buchstaben
-            monitor.write(pattern[row] or "     ")
-        end
-    end
+if monitor then
+    w,h = monitor.getSize()
 end
 
--- Beispiel
-drawLargeText("AXOMAT1C", 1, 1)
+-- Balkenlängen
+local sizes = {
+    desktop = math.min(30, w-2),
+    tablet  = math.min(20, w-2)
+}
+
+local function getBarLength(device)
+    return sizes[device] or sizes.desktop
+end
+
+return {
+    getBarLength = getBarLength
+}
