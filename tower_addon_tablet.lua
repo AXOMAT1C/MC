@@ -1,63 +1,48 @@
 -- tower_addon_tablet.lua
--- Rednet listener for remote tablets/clients
-local M = {}
+local monitor = peripheral.wrap("top")
+local w,h = monitor.getSize()
+monitor.clear()
+monitor.setBackgroundColor(colors.black)
+monitor.setTextColor(colors.white)
 
--- Ensure modem open (tries to open any modem peripheral)
-local function ensureRednetOpen()
-    if not rednet then return false end
-    local opened = false
-    if peripheral and peripheral.getNames then
-        for _, name in pairs(peripheral.getNames()) do
-            if peripheral.getType(name) == "modem" then
-                pcall(function() rednet.open(name) end)
-                opened = true
-            end
-        end
-    end
-    return opened
-end
+local tower_state = require("tower_state")
+local floors = {"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"}
+local tabletBarLength = math.min(20, w-2)
 
--- start listener; runs in its own thread (parallel)
--- Commands:
--- GET_SUMMARY -> returns compact summary (logic.summary)
--- GET_STATE -> returns serialized state
--- TOGGLE:si:ti -> toggles a task
--- RESET_ALL -> resets state (dangerous)
-function M.startRednetListener(state, logic, state_mod)
-    if not ensureRednetOpen() then
-        print("tower_addon_tablet: kein Modem offen. Rednet disabled.")
-        return
-    end
+rednet.open("back")
 
-    while true do
-        local id, msg = rednet.receive(2) -- 2s timeout to allow loop checks
-        if id and msg then
-            local s = tostring(msg)
-            if s == "GET_SUMMARY" then
-                rednet.send(id, logic.summary(state))
-            elseif s == "GET_STATE" then
-                rednet.send(id, textutils.serialize(state))
-            elseif string.sub(s,1,7) == "TOGGLE:" then
-                local parts = {}
-                for part in string.gmatch(s, "([^:]+)") do table.insert(parts, part) end
-                local si = tonumber(parts[2]); local ti = tonumber(parts[3])
-                if si and ti then
-                    logic.performTask(state, si, ti)
-                    state_mod.saveState(state)
-                    rednet.send(id, "OK")
-                else
-                    rednet.send(id, "ERR_BAD_IDX")
-                end
-            elseif s == "RESET_ALL" then
-                state = state_mod.resetState()
-                rednet.send(id, "OK_RESET")
-            else
-                rednet.send(id, "ERR_UNKNOWN_CMD")
-            end
-        else
-            os.sleep(0.02)
-        end
+local colorsFloor = {
+    DACH = colors.lightBlue,
+    WOOD = colors.brown,
+    FARMS = colors.green,
+    ITEM = colors.yellow,
+    DEFENSE = colors.red,
+    STORAGE = colors.orange,
+    ["EN/ME"] = colors.purple
+}
+
+local function drawTabletUI()
+    monitor.clear()
+    for i,floor in ipairs(floors) do
+        local y = i
+        if y>h then break end
+        local progress = tower_state.getProgress(floor)
+        local filled = math.floor(progress * tabletBarLength)
+        monitor.setCursorPos(2, y)
+        monitor.setBackgroundColor(colorsFloor[floor] or colors.white)
+        monitor.write(string.rep(" ", filled))
+        monitor.setBackgroundColor(colors.black)
+        monitor.write(string.rep("-", tabletBarLength - filled) .. " " .. floor .. string.format(" %.0f%%", progress*100))
     end
 end
 
-return M
+while true do
+    local senderId, message = rednet.receive()
+    if message.type == "update" then
+        for floor,value in pairs(message.data) do
+            tower_state.setProgress(floor, value)
+        end
+    end
+    drawTabletUI()
+    sleep(1)
+end
