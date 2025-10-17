@@ -1,57 +1,47 @@
--- tower_state.lua
-local stateFile = "tower_state_data.lua"
+local state = {}
+state.file = "tower_state.json"
 
-local state = {
-    currentFloor = 1,
-    progress = {},
-    lang = "de"
-}
-
--- Lade gespeicherten Zustand
-local function loadState()
-    if fs.exists(stateFile) then
-        local f = fs.open(stateFile,"r")
+-- Lade Zustand
+local function load()
+    local f = fs.open(state.file,"r")
+    if f then
         local content = f.readAll()
         f.close()
-        local ok, loaded = pcall(loadstring(content))
-        if ok and type(loaded) == "table" then
-            for k,v in pairs(loaded) do
-                state[k] = v
-            end
-        end
+        state.data = textutils.unserialize(content) or {}
+    else
+        state.data = {}
     end
 end
 
--- Speichere Zustand
-local function saveState()
-    local f = fs.open(stateFile,"w")
-    f.write("return "..textutils.serialize(state))
-    f.close()
+-- Speicher Zustand
+local function save()
+    local f = fs.open(state.file,"w")
+    if f then
+        f.write(textutils.serialize(state.data))
+        f.close()
+    end
 end
 
--- Fortschritt abfragen
+-- Fortschritt pro Floor
 function state.getProgress(floor)
-    return state.progress[floor] or 0
+    return state.data[floor] or 0
 end
 
--- Fortschritt setzen
 function state.setProgress(floor, value)
-    state.progress[floor] = value
-    saveState()
+    state.data[floor] = math.min(math.max(value,0),1)
+    save()
 end
 
--- Sprache abfragen
+-- Sprache
 function state.getLang()
-    return state.lang or "de"
+    return state.data.lang or "de"
 end
 
--- Sprache setzen
-function state.setLang(code)
-    state.lang = code
-    saveState()
+function state.setLang(lang)
+    state.data.lang = lang
+    save()
 end
 
--- Initial laden
-loadState()
-
+-- Initialisierung
+load()
 return state
