@@ -1,3 +1,10 @@
+local i18n = dofile("/rom/programs/i18n.lua")
+local texts = i18n.getTexts()
+
+print(texts.title)       -- zeigt den Turm-Titel in der gewählten Sprache
+print(texts.floors[1])   -- erstes Stockwerk
+
+
 local package = package or _G.package
 
 package.path = "/rom/programs/?.lua;" .. package.path
