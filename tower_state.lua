@@ -1,47 +1,57 @@
+-- tower_state.lua
 local state = {}
-state.file = "tower_state.json"
+local path = "tower_state_data"
 
--- Lade Zustand
-local function load()
-    local f = fs.open(state.file,"r")
-    if f then
-        local content = f.readAll()
-        f.close()
-        state.data = textutils.unserialize(content) or {}
-    else
-        state.data = {}
-    end
-end
+-- Defaultwerte
+state.lang = state.lang or "de"
+state.progress = state.progress or {}  -- Fortschritte der Floors
 
--- Speicher Zustand
-local function save()
-    local f = fs.open(state.file,"w")
-    if f then
-        f.write(textutils.serialize(state.data))
-        f.close()
-    end
-end
-
--- Fortschritt pro Floor
-function state.getProgress(floor)
-    return state.data[floor] or 0
-end
-
+-- Fortschritt setzen und speichern
 function state.setProgress(floor, value)
-    state.data[floor] = math.min(math.max(value,0),1)
-    save()
+    state.progress[floor] = value
+    state.save()
 end
 
--- Sprache
-function state.getLang()
-    return state.data.lang or "de"
+function state.getProgress(floor)
+    return state.progress[floor] or 0
 end
 
+-- Sprache setzen
 function state.setLang(lang)
-    state.data.lang = lang
-    save()
+    state.lang = lang
+    state.save()
 end
 
--- Initialisierung
-load()
+-- Sprache holen
+function state.getLang()
+    return state.lang or "de"
+end
+
+-- Speichern
+function state.save()
+    local file = fs.open(path, "w")
+    -- nur Tabellen, Strings, Zahlen speichern
+    file.write(textutils.serialize({
+        lang = state.lang,
+        progress = state.progress
+    }))
+    file.close()
+end
+
+-- Laden
+function state.load()
+    if fs.exists(path) then
+        local file = fs.open(path, "r")
+        local data = textutils.unserialize(file.readAll())
+        file.close()
+        if data then
+            state.lang = data.lang or "de"
+            state.progress = data.progress or {}
+        end
+    end
+end
+
+-- direkt laden beim require
+state.load()
+
 return state
