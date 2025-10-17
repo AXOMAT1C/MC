@@ -7,7 +7,10 @@ local files = {
     "tower_addon_tablet.lua",
     "text_size.lua",
     "tower_visual.lua",
-    "touchscreen.lua",}
+    "touchscreen.lua",
+    "i18n_de.lua",
+    "i18n_en.lua",
+    "i18n_pl.lua",}
 
 -- GitHub-Raw-Basis-URL
 local baseURL = "https://raw.githubusercontent.com/AXOMAT1C/MC/main/"
