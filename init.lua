@@ -1,46 +1,57 @@
+-- Init Script für Tablet
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
 local state = require("tower_state")
+local textsize = require("textsize")
+textsize.setOptimalTextScale(monitor)
+
 local w,h = monitor.getSize()
 
-monitor.clear()
-monitor.setCursorPos(1,1)
-monitor.setBackgroundColor(colors.black)
-monitor.setTextColor(colors.white)
-
-monitor.setCursorPos(2,2)
-monitor.write("Sprache wählen / Choose Language / Wybierz język")
-
--- Buttons
-local buttonHeight = 3
-local buttonWidth = math.floor(w/3)
+-- Sprachwahl
 local languages = {"de","en","pl"}
-local labels = {"DE","EN","PL"}
+local langLabels = {de="Deutsch", en="English", pl="Polski"}
+local selectedLang = state.getLang()
 
-for i,label in ipairs(labels) do
-    local x = (i-1)*buttonWidth + 1
-    local y = h/2
-    monitor.setBackgroundColor(colors.gray)
-    for j=0,buttonHeight-1 do
-        monitor.setCursorPos(x, y+j)
-        monitor.write(string.rep(" ", buttonWidth))
-    end
-    monitor.setCursorPos(x + 2, y+1)
+local function drawLangSelection()
+    monitor.clear()
+    monitor.setBackgroundColor(colors.black)
     monitor.setTextColor(colors.white)
-    monitor.write(label)
+    monitor.setCursorPos(2,2)
+    monitor.write("Bitte Sprache wählen / Please select language / Wybierz język:")
+    local startY = 4
+    for i,lang in ipairs(languages) do
+        monitor.setCursorPos(4, startY + (i-1)*2)
+        if lang == selectedLang then
+            monitor.setBackgroundColor(colors.gray)
+            monitor.setTextColor(colors.white)
+        else
+            monitor.setBackgroundColor(colors.black)
+            monitor.setTextColor(colors.white)
+        end
+        monitor.write(langLabels[lang])
+        monitor.setBackgroundColor(colors.black)
+    end
 end
 
--- Touch Event Handler
-while true do
-    local event, side, x, y = os.pullEvent("monitor_touch")
-    local ybtn = h/2
-    for i,langCode in ipairs(languages) do
-        local xstart = (i-1)*buttonWidth + 1
-        if x>=xstart and x<xstart+buttonWidth and y>=ybtn and y<ybtn+buttonHeight then
-            state.setLang(langCode)
-            monitor.clear()
-            shell.run("tower_visual") -- Starte das Visual direkt nach Auswahl
+local function handleLangTouch()
+    while true do
+        local event, side, x, y = os.pullEvent("monitor_touch")
+        for i,lang in ipairs(languages) do
+            local btnX1, btnY1 = 4, 4 + (i-1)*2
+            local btnX2, btnY2 = 4 + #langLabels[lang], btnY1
+            if x>=btnX1 and x<=btnX2 and y==btnY1 then
+                state.setLang(lang)
+                selectedLang = lang
+                return
+            end
         end
     end
 end
+
+-- Anzeige der Sprachwahl
+drawLangSelection()
+handleLangTouch()
+
+-- Danach Tower-Visual starten
+os.run({}, "tower_visual")
