@@ -5,7 +5,8 @@ local cache = {}
 
 function i18n.setLang(lang)
     currentLang = lang
-    local ok, data = pcall(require, "i18n_" .. lang)
+    local ok, data = pcall(dofile, "i18n_" .. lang .. ".lua")
+
     if ok and type(data) == "table" then
         cache[lang] = data
     else
