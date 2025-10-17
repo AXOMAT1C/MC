@@ -161,14 +161,24 @@ local function handleTouch()
             end
         end
         -- Sprach-Buttons
-        local langCoords = {DE={w-12,2},EN={w-8,2},PL={w-4,2}}
-        for k,v in pairs(langCoords) do
-            if x>=v[1] and x<=v[1]+3 and y>=v[2] and y<=v[2]+2 then
-                local code = k:lower()
-                state.setLang(code)
-                T = require("i18n_"..code)
-            end
-        end
+       local langCoords = {DE={w-12,2},EN={w-8,2},PL={w-4,2}}
+
+for k,v in pairs(langCoords) do
+    if x >= v[1] and x <= v[1]+3 and y >= v[2] and y <= v[2]+2 then
+        local code = k:lower()
+        state.setLang(code)
+        -- zwinge das Neuladen ohne Cache
+        package.loaded["i18n_de"] = nil
+        package.loaded["i18n_en"] = nil
+        package.loaded["i18n_pl"] = nil
+        T = require("i18n_"..code)
+        -- Bildschirm neu zeichnen
+        drawFrame()
+        drawRoadmap()
+        drawButtons()
+    end
+end
+
         drawButtons()
     end
 end
