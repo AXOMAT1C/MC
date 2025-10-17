@@ -17,6 +17,7 @@ local T = require("i18n_"..lang)
 -- Layout Variablen
 local maxBarLength = math.min(30, w-4)
 local buttonHeight = 3
+local w,h = monitor.getSize()
 local buttonWidth = math.floor(w / #T.floors)
 
 -- ASCII Roadmap
