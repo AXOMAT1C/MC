@@ -1,26 +1,13 @@
-package.path = "/rom/?.lua;/rom/?/init.lua;" .. package.path
-
-
-
--- i18n.lua
 local i18n = {}
 local currentLang = "de"
 local cache = {}
 
--- Ermittle Pfad der aktuellen Datei (funktioniert in CC)
-local function getScriptDir()
-    local path = shell.getRunningProgram()
-    return fs.getDir(path)
-end
-
-local baseDir = getScriptDir()
-
 function i18n.setLang(lang)
     currentLang = lang
-    local path = fs.combine(baseDir, "i18n_" .. lang .. ".lua")
+    local path = "/rom/programs/i18n_" .. lang .. ".lua"  -- <--- absoluter Pfad
     if not fs.exists(path) then
         print("⚠️ Sprachdatei fehlt: " .. path)
-        path = fs.combine(baseDir, "i18n_de.lua")
+        path = "/rom/programs/i18n_de.lua"
         currentLang = "de"
     end
 
@@ -35,5 +22,7 @@ end
 function i18n.getLang() return currentLang end
 function i18n.getTexts() return cache[currentLang] or {} end
 
+-- Standardmäßig Deutsch laden
 i18n.setLang(currentLang)
+
 return i18n
