@@ -1,3 +1,7 @@
+package.path = "/rom/?.lua;/rom/?/init.lua;" .. package.path
+
+
+
 -- i18n.lua
 local i18n = {}
 local currentLang = "de"
