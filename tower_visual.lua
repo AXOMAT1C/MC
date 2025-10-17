@@ -1,24 +1,23 @@
--- Tower Visual All-in-One
+-- Tower Tablet Anzeige v2
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
--- Module
+-- State & Übersetzung laden
 local state = require("tower_state")
-local textsize = require("textsize")
-
--- Dynamische Textgröße
-textsize.setOptimalTextScale(monitor)
-local w,h = monitor.getSize()
-
--- Sprache & Übersetzungen
 local lang = state.getLang() or "de"
 local T = require("i18n_"..lang)
 
--- Layout Variablen
+-- Dynamische Textgröße
+local textsize = require("text_size")
+textsize.setOptimalTextScale(monitor)
+
+-- Monitorgröße
+local w,h = monitor.getSize()
+
+-- Berechnungen für Balken & Buttons
 local maxBarLength = math.min(30, w-4)
 local buttonHeight = 3
-local w,h = monitor.getSize()
-local buttonWidth = math.floor(w / #T.floors)
+local buttonWidth = math.floor((w-2) / #T.floors)
 
 -- ASCII Roadmap
 local roadmap = {
@@ -66,6 +65,7 @@ local roadmap = {
 }
 
 -- Funktionen
+
 local function drawFrame()
     monitor.clear()
     for y=1,h do
@@ -80,7 +80,7 @@ end
 
 local function drawRoadmap()
     for i,line in ipairs(roadmap) do
-        if i<=h-buttonHeight-#T.floors-1 then
+        if i <= h-buttonHeight-#T.floors-1 then
             monitor.setCursorPos(2,i)
             monitor.setBackgroundColor(colors.black)
             monitor.setTextColor(colors.white)
@@ -93,19 +93,14 @@ local function drawProgress()
     local startY = math.min(#roadmap+1, h-buttonHeight-#T.floors-1)
     for i,floor in ipairs(T.floors) do
         local y = startY + i
-        if y>h-buttonHeight then break end
         local progress = state.getProgress(floor)
         local filled = math.floor(progress*maxBarLength)
-        
-        -- Balken
         monitor.setCursorPos(2,y)
         monitor.setBackgroundColor(colors.gray)
         monitor.write(string.rep(" ", maxBarLength))
         monitor.setCursorPos(2,y)
         monitor.setBackgroundColor(colors.green)
         monitor.write(string.rep(" ", filled))
-        
-        -- Text + Haken
         monitor.setBackgroundColor(colors.black)
         monitor.setTextColor(colors.white)
         monitor.setCursorPos(maxBarLength+3,y)
