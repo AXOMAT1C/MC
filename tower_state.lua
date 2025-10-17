@@ -40,3 +40,33 @@ end
 
 load()
 return state
+
+local state = {}
+
+-- Aktuelle Sprache
+state.lang = state.lang or "de"
+
+-- Setzt die Sprache
+function state.setLang(code)
+    state.lang = code
+    saveState(state)  -- optional: Fortschritt + Sprache speichern
+end
+
+-- Holt die aktuelle Sprache
+function state.getLang()
+    return state.lang
+end
+
+-- Beispiel-Fortschritt-Funktionen
+state.progress = state.progress or {}
+
+function state.getProgress(floor)
+    return state.progress[floor] or 0
+end
+
+function state.setProgress(floor, value)
+    state.progress[floor] = value
+    saveState(state) -- Fortschritt speichern
+end
+
+return state
