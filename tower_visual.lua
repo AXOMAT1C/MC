@@ -156,3 +156,32 @@ parallel.waitForAny(
     end,
     handleTouch
 )
+-- innerhalb drawProgress()
+for i,floor in ipairs(T.floors) do
+    local y = startY + i
+    local progress = state.getProgress(floor)
+    local filled = math.floor(progress*maxBarLength)
+    
+    -- Balken
+    monitor.setCursorPos(2,y)
+    monitor.setBackgroundColor(colors.gray)
+    monitor.write(string.rep(" ", maxBarLength))
+    monitor.setCursorPos(2,y)
+    monitor.setBackgroundColor(colors.green)
+    monitor.write(string.rep(" ", filled))
+    
+    -- Text + Haken
+    monitor.setBackgroundColor(colors.black)
+    monitor.setTextColor(colors.white)
+    monitor.setCursorPos(maxBarLength+3,y)
+    
+    local nextIndex = math.floor(progress*#T.tasks[floor])+1
+    local nextTask = T.tasks[floor][nextIndex] or "..."
+    local doneTasks = math.floor(progress*#T.tasks[floor])
+    
+    local taskText = nextTask
+    if doneTasks>=#T.tasks[floor] then
+        taskText = "[X] "..nextTask -- Haken bei abgeschlossen
+    end
+    monitor.write(floor.." "..string.format("%.0f%%", progress*100).." "..taskText)
+end
