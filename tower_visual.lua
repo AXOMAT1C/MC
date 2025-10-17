@@ -1,15 +1,11 @@
--- tower_visual.lua
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden!") end
 
--- State und Textgröße laden
 local state = require("tower_state")
 local textsize = require("textsize")
 textsize.setOptimalTextScale(monitor)
-
 local w,h = monitor.getSize()
 
--- Sprache
 local lang = state.getLang()
 local T = require("i18n_"..lang)
 
@@ -62,7 +58,7 @@ local roadmap = {
     "+--------------------------------------------------------+"
 }
 
--- Zeichnet den Monitor-Rahmen
+-- Frame
 local function drawFrame()
     monitor.clear()
     for y=1,h do
@@ -75,10 +71,9 @@ local function drawFrame()
     end
 end
 
--- Roadmap ASCII zeichnen
 local function drawRoadmap()
     for i,line in ipairs(roadmap) do
-        if i <= h-buttonHeight-#T.floors-1 then
+        if i<=h-buttonHeight-#T.floors-1 then
             monitor.setCursorPos(2,i)
             monitor.setBackgroundColor(colors.black)
             monitor.setTextColor(colors.white)
@@ -87,23 +82,18 @@ local function drawRoadmap()
     end
 end
 
--- Fortschritt zeichnen
 local function drawProgress()
     local startY = math.min(#roadmap+1, h-buttonHeight-#T.floors-1)
     for i,floor in ipairs(T.floors) do
         local y = startY + i
         local progress = state.getProgress(floor)
         local filled = math.floor(progress*maxBarLength)
-        
-        -- Balken
         monitor.setCursorPos(2,y)
         monitor.setBackgroundColor(colors.gray)
         monitor.write(string.rep(" ", maxBarLength))
         monitor.setCursorPos(2,y)
         monitor.setBackgroundColor(colors.green)
         monitor.write(string.rep(" ", filled))
-        
-        -- Text + Haken
         monitor.setBackgroundColor(colors.black)
         monitor.setTextColor(colors.white)
         monitor.setCursorPos(maxBarLength+3,y)
@@ -118,7 +108,6 @@ local function drawProgress()
     end
 end
 
--- Buttons zeichnen
 local function drawButtons()
     local by = h-buttonHeight+1
     for i,floor in ipairs(T.floors) do
@@ -135,7 +124,7 @@ local function drawButtons()
     -- Sprach-Buttons
     local langButtons = {"DE","EN","PL"}
     for i,label in ipairs(langButtons) do
-        local bx = w - 4*(4-i)
+        local bx = w-4*(4-i)
         local by2 = 2
         monitor.setBackgroundColor(colors.gray)
         for j=0,2 do
@@ -148,13 +137,10 @@ local function drawButtons()
     end
 end
 
--- Touch-Handler
 local function handleTouch()
     while true do
         local event, side, x, y = os.pullEvent("monitor_touch")
         local by = h-buttonHeight+1
-
-        -- Fortschritt Buttons
         for i,floor in ipairs(T.floors) do
             local bx = (i-1)*buttonWidth+1
             if x>=bx and x<bx+buttonWidth and y>=by and y<by+buttonHeight then
@@ -166,28 +152,17 @@ local function handleTouch()
                 end
             end
         end
-
-        -- Sprach-Buttons
         local langCoords = {DE={w-12,2},EN={w-8,2},PL={w-4,2}}
         for k,v in pairs(langCoords) do
-            if x >= v[1] and x <= v[1]+3 and y >= v[2] and y <= v[2]+2 then
-                local code = k:lower()
-                state.setLang(code)
-                package.loaded["i18n_de"] = nil
-                package.loaded["i18n_en"] = nil
-                package.loaded["i18n_pl"] = nil
-                T = require("i18n_"..code)
-                drawFrame()
-                drawRoadmap()
-                drawButtons()
+            if x>=v[1] and x<=v[1]+3 and y>=v[2] and y<=v[2]+2 then
+                state.setLang(k:lower())
+                T = require("i18n_"..k:lower())
             end
         end
-
         drawButtons()
     end
 end
 
--- Main Loop
 drawFrame()
 drawRoadmap()
 drawButtons()
