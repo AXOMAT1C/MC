@@ -5,12 +5,14 @@ local cache = {}
 
 function i18n.setLang(lang)
     currentLang = lang
-    local ok, data = pcall(dofile, "i18n_" .. lang .. ".lua")
-
+    local path = "i18n_" .. lang .. ".lua"
+    local ok, data = pcall(dofile, path)
     if ok and type(data) == "table" then
         cache[lang] = data
     else
-        error("Fehler: Sprachdatei 'i18n_" .. lang .. ".lua' nicht gefunden oder ungültig!")
+        print("⚠️ Konnte '" .. path .. "' nicht laden. Fallback: Deutsch")
+        cache.de = dofile("i18n_de.lua")
+        currentLang = "de"
     end
 end
 
