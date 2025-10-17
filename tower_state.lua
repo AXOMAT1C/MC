@@ -2,9 +2,9 @@
 local state = {}
 local path = "tower_state_data"
 
--- Defaultwerte
-state.lang = state.lang or "de"
-state.progress = state.progress or {}  -- Fortschritte der Floors
+-- Standardwerte
+state.lang = "de"
+state.progress = {}
 
 -- Fortschritt setzen und speichern
 function state.setProgress(floor, value)
@@ -27,14 +27,14 @@ function state.getLang()
     return state.lang or "de"
 end
 
--- Speichern
+-- Speichern: nur Tabellen, Zahlen, Strings
 function state.save()
     local file = fs.open(path, "w")
-    -- nur Tabellen, Strings, Zahlen speichern
-    file.write(textutils.serialize({
+    local data = {
         lang = state.lang,
         progress = state.progress
-    }))
+    }
+    file.write(textutils.serialize(data))
     file.close()
 end
 
@@ -51,7 +51,5 @@ function state.load()
     end
 end
 
--- direkt laden beim require
 state.load()
-
 return state
