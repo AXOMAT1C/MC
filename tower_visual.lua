@@ -13,50 +13,8 @@ local maxBarLength = math.min(30, w-4)
 local buttonHeight = 3
 local buttonWidth = math.floor(w / #T.floors)
 
--- ASCII Roadmap
-local roadmap = {
-    "Y=319+  -- DACH / SKY / OPTIONAL",
-    "+--------------------------------------------------------+",
-    "| T: Teleporter  E: End Access  R: Decorative Roof      |",
-    "| G: Glass Roof  S: Sky Lights  F: Optional Sky Farms    |",
-    "+--------------------------------------------------------+",
-    "Y=64+   -- WOOD / Dekoration",
-    "+--------------------------------------------------------+",
-    "| L: Logs  T: Trees  D: Decorative Wood Blocks          |",
-    "| R: Roof Support / Sky-Top Layer                        |",
-    "+--------------------------------------------------------+",
-    "Y=40-63  -- FARMS",
-    "+--------------------------------------------------------+",
-    "| P1: Plant 1  P2: Plant 2  C: Crops                     |",
-    "| A1: Animal 1  A2: Animal 2                             |",
-    "| B1: Bee 1     B2: Bee 2                                 |",
-    "| AQ: Aquaculture  W1: Water Gen 1  W2: Water Gen 2     |",
-    "+--------------------------------------------------------+",
-    "Y=20-39  -- ITEM",
-    "+--------------------------------------------------------+",
-    "| CB: Create Belts / Conveyors  AE: AE2 I/O Terminals    |",
-    "| XN: XNet Links / Mod Output Channels                    |",
-    "| CS: Crafting Stations / Auto-Crafters                  |",
-    "+--------------------------------------------------------+",
-    "Y=10-19  -- DEFENSE",
-    "+--------------------------------------------------------+",
-    "| T: Turrets / SecurityCraft Towers                       |",
-    "| W: Walls / Shields / Protective Barriers               |",
-    "+--------------------------------------------------------+",
-    "Y=5-9   -- STORAGE",
-    "+--------------------------------------------------------+",
-    "| D: Drawers  F: Functional Storage  B: Buffers          |",
-    "| DK: Dank Storage / Intermediate Storage                |",
-    "+--------------------------------------------------------+",
-    "Y=-58-4  -- EN / ME",
-    "+--------------------------------------------------------+",
-    "| E: Powah Generators / Flux Capacitors                  |",
-    "| M: AE2 Core / Terminals                                 |",
-    "| S: ME Storage Cells 64k / 256k / 1024k                 |",
-    "| C: Crafting Terminals / Automation Blocks             |",
-    "| Cables: Energy Distribution Channels                   |",
-    "+--------------------------------------------------------+"
-}
+-- ASCII Roadmap (hier komplette Roadmap einfügen)
+local roadmap = { ... }
 
 -- Frame
 local function drawFrame()
@@ -71,6 +29,7 @@ local function drawFrame()
     end
 end
 
+-- Roadmap
 local function drawRoadmap()
     for i,line in ipairs(roadmap) do
         if i<=h-buttonHeight-#T.floors-1 then
@@ -82,6 +41,7 @@ local function drawRoadmap()
     end
 end
 
+-- Fortschritt
 local function drawProgress()
     local startY = math.min(#roadmap+1, h-buttonHeight-#T.floors-1)
     for i,floor in ipairs(T.floors) do
@@ -97,6 +57,7 @@ local function drawProgress()
         monitor.setBackgroundColor(colors.black)
         monitor.setTextColor(colors.white)
         monitor.setCursorPos(maxBarLength+3,y)
+
         local nextIndex = math.floor(progress*#T.tasks[floor])+1
         local nextTask = T.tasks[floor][nextIndex] or "..."
         local doneTasks = math.floor(progress*#T.tasks[floor])
@@ -108,6 +69,7 @@ local function drawProgress()
     end
 end
 
+-- Buttons
 local function drawButtons()
     local by = h-buttonHeight+1
     for i,floor in ipairs(T.floors) do
@@ -121,6 +83,7 @@ local function drawButtons()
         monitor.setTextColor(colors.white)
         monitor.write(floor.." "..T.button_plus.."/"..T.button_minus)
     end
+
     -- Sprach-Buttons
     local langButtons = {"DE","EN","PL"}
     for i,label in ipairs(langButtons) do
@@ -137,10 +100,12 @@ local function drawButtons()
     end
 end
 
+-- Touch Handler
 local function handleTouch()
     while true do
         local event, side, x, y = os.pullEvent("monitor_touch")
         local by = h-buttonHeight+1
+        -- Floor Buttons
         for i,floor in ipairs(T.floors) do
             local bx = (i-1)*buttonWidth+1
             if x>=bx and x<bx+buttonWidth and y>=by and y<by+buttonHeight then
@@ -152,17 +117,20 @@ local function handleTouch()
                 end
             end
         end
+        -- Sprach-Buttons
         local langCoords = {DE={w-12,2},EN={w-8,2},PL={w-4,2}}
         for k,v in pairs(langCoords) do
             if x>=v[1] and x<=v[1]+3 and y>=v[2] and y<=v[2]+2 then
-                state.setLang(k:lower())
-                T = require("i18n_"..k:lower())
+                local code = k:lower()
+                state.setLang(code)
+                T = require("i18n_"..code)
             end
         end
         drawButtons()
     end
 end
 
+-- Main
 drawFrame()
 drawRoadmap()
 drawButtons()
