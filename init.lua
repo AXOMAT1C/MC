@@ -1,3 +1,5 @@
+local package = package or _G.package
+
 package.path = "/rom/programs/?.lua;" .. package.path
 
 local i18n = require("i18n")
