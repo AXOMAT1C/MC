@@ -1,16 +1,25 @@
-return {
-    title="Tower Progress",
-    floor="Floor",
-    button_plus="+",
-    button_minus="-",
-    floors={"DACH","WOOD","FARMS","ITEM","DEFENSE","STORAGE","EN/ME"},
-    tasks={
-        DACH={"Build teleporter","Activate End Access","Decorative roof"},
-        WOOD={"Collect logs","Plant trees","Decorative wood blocks"},
-        FARMS={"Plant 1 setup","Add animals 1","Build aquaculture"},
-        ITEM={"Set up AE2 terminal","Create belts"},
-        DEFENSE={"Place turrets","Reinforce walls"},
-        STORAGE={"Set up drawers","Build buffers"},
-        ["EN/ME"]={"Build powah generator","Setup AE2 Core"}
-    }
+local T = {}
+
+T.floors = {
+    "ROOF",
+    "WOOD",
+    "FARMS",
+    "ITEM",
+    "DEFENSE",
+    "STORAGE",
+    "EN_ME"
 }
+
+T.tasks = {
+    ["ROOF"] = {"Build Teleporter", "Set End Access", "Build Decorative Roof"},
+    ["WOOD"] = {"Place Logs", "Plant Trees", "Place Decorative Blocks"},
+    ["FARMS"] = {"Plant 1", "Plant 2", "Harvest Crops"},
+    ["ITEM"] = {"Create Conveyors", "Place AE2 IO-Terminals", "Build Crafting Station"},
+    ["DEFENSE"] = {"Place Turrets", "Build Walls"},
+    ["STORAGE"] = {"Setup Drawers", "Place Functional Storage"},
+    ["EN_ME"] = {"Build Powah Generator", "Setup AE2 Core", "Place ME Storage Cells"}
+}
+
+T.button_plus = "+"
+T.button_minus = "-"
+return T
