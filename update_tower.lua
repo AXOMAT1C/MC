@@ -10,7 +10,8 @@ local files = {
     "touchscreen.lua",
     "i18n_de.lua",
     "i18n_en.lua",
-    "i18n_pl.lua",}
+    "i18n_pl.lua",
+    "i18n.lua",}
 
 -- GitHub-Raw-Basis-URL
 local baseURL = "https://raw.githubusercontent.com/AXOMAT1C/MC/main/"
