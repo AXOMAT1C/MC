@@ -1,25 +1,19 @@
 local T = {}
 
-T.floors = {
-    "DACH",
-    "WOOD",
-    "FARMS",
-    "ITEM",
-    "DEFENSE",
-    "STORAGE",
-    "EN_ME"
-}
-
-T.tasks = {
-    ["DACH"] = {"Zbuduj teleporter", "Ustaw End Access", "Zbuduj dekoracyjny dach"},
-    ["WOOD"] = {"Umiesc klocki", "Zasadz drzewa", "Umiesc bloki dekoracyjne"},
-    ["FARMS"] = {"Zasadz roslina1", "Zasadz roslina2", "Zbierz plony"},
-    ["ITEM"] = {"Stworz przenosniki", "Umiesc AE2 IO-Terminals", "Zbuduj Crafting Station"},
-    ["DEFENSE"] = {"Umiesc wiezyczki", "Zbuduj mury"},
-    ["STORAGE"] = {"Skonfiguruj Drawers", "Umiesc Functional Storage"},
-    ["EN_ME"] = {"Zbuduj Powah Generator", "Skonfiguruj AE2 Core", "Umiesc ME Storage Cells"}
-}
-
+T.title = "Zarządzanie Wieżą"
+T.floor = "Piętro"
 T.button_plus = "+"
 T.button_minus = "-"
+
+T.floors = {"Dach","Drewno","Farmy","Przedmioty","Obrona","Magazyn","EN/ME"}
+T.tasks = {
+    Dach = {"Zbuduj Teleporter","Zainstaluj Szklany Dach","Dekoracyjny Dach"},
+    Drewno = {"Zbierz Drewno","Posadź Drzewa","Ustaw Dekoracje"},
+    Farmy = {"Posadź Rośliny","Opiekuj się Zwierzętami","Pszczelarstwo"},
+    Przedmioty = {"Terminale AE2","Stacja Rzemieślnicza","Zbuduj Conveyor"},
+    Obrona = {"Zbuduj Wieże","Zbuduj Mury"},
+    Magazyn = {"Ustaw Drawers","Bufory","Magazyn Pośredni"},
+    ["EN/ME"] = {"Zbuduj Generator Powah","Ustaw AE2 Core","Ustaw ME Storage"}
+}
+
 return T
