@@ -1,3 +1,5 @@
+package.path = "/rom/programs/?.lua;" .. package.path
+
 local i18n = require("i18n")
 local texts = i18n.getTexts()
 local monitor = peripheral.wrap("top") or peripheral.find("monitor")
