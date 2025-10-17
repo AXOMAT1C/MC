@@ -1,3 +1,6 @@
+local i18n = require("i18n")
+local texts = i18n.getTexts()
+
 local i18n = {}
 local currentLang = "de"
 local cache = {}
